@@ -292,6 +292,11 @@ const FeatureArea8ItemNew = () => {
 	const [regions, setRegions] = useState<string[]>([]) // 地区
 	const [region, setRegion] = useState<string>('none') // 用户选择的地区
 
+	// 地区加载状态
+	const [regionLoading, setRegionLoading] = useState(false)
+	// 节点数据是否正常获取
+	const [nodeDataError, setNodeDataError] = useState(false)
+
 	const showStartProxy = () => (parseFloat(CONET_Balance) > 0 || nodes.length > 0) && !isProxyStart
 
 	useEffect(() => {
@@ -313,22 +318,8 @@ const FeatureArea8ItemNew = () => {
 				setCONET_Balance(data.CONET_Balance)
 			})
 			await scanAssets()
-			const [succes, nodes] = await getAllNodes()
-			if (succes === 'SUCCESS') {
-				const k = nodes[0].node
-				setNodes(k)
-				const regions = k.reduce((prev: string[], curr: any) => {
-					// 如果当前元素没有country，或country已经存在于prev中，则跳过，否则把当前元素添加到prev中
-					if (!curr.country || prev.includes(curr.country)) {
-						return prev
-					} else {
-						return [...prev, curr.country]
-					}
-				}, [])
-				setRegions(regions)
-			}
 
-
+			await getNodeListData()
 
 			return () => {
 				active = false
@@ -340,6 +331,34 @@ const FeatureArea8ItemNew = () => {
 		fetchData()
 		return () => { active = false }
 	}, [])
+
+
+	const getNodeListData = async () => {
+		setNodeDataError(false)
+		setRegionLoading(true)
+		const [succes, nodes] = await getAllNodes().finally(() => {
+			// 获取数据 - 结束
+			setRegionLoading(false)
+		})
+		// 获取数据 - 成功
+		if (succes === 'SUCCESS') {
+			const k = nodes[0].node
+			setNodes(k)
+			const regions = k.reduce((prev: string[], curr: any) => {
+				if (!curr.country || prev.includes(curr.country)) {
+					return prev
+				} else {
+					return [...prev, curr.country]
+				}
+			}, [])
+			setRegions(regions)
+		}
+		// 获取数据 - 失败
+		else {
+			setNodeDataError(true)
+		}
+		Promise.resolve()
+	}
 
 
 
@@ -416,21 +435,52 @@ const FeatureArea8ItemNew = () => {
 
 				<Grid item xs={12} sx={{ textAlign: 'center', width: '100%' }}>
 					{/* 选择国家或地区 */}
-					<FormControl sx={{ m: 1, minWidth: 180 }}>
-						<InputLabel>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.selectCountry' })}</InputLabel>
-						<Select
-							value={region}
-							label="region"
-							onChange={changeRegion}
+					{/* 加载中状态 */}
+					{regionLoading &&
+						<Stack
+							direction="column"
+							justifyContent="center"
+							alignItems="center"
+							spacing={2}
+							sx={{ minHeight: '5rem', width: '100%' }}
 						>
-							<ListSubheader>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.randomCountry' })}</ListSubheader>
-							<MenuItem value={'none'}>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.random' })}</MenuItem>
-							<ListSubheader>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.optionalCountry' })}</ListSubheader>
-							{regions.map((n, i) => {
-								return <MenuItem key={i} value={n}>{n}</MenuItem>
-							})}
-						</Select>
-					</FormControl>
+							<CircularProgress />
+						</Stack>
+					}
+					{/* 加载完毕 */}
+					{/* 数据正常获取 */}
+					{
+						!regionLoading && !nodeDataError &&
+						<FormControl sx={{ m: 1, minWidth: 180 }}>
+							<InputLabel>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.selectCountry' })}</InputLabel>
+							<Select
+								value={region}
+								label="region"
+								onChange={changeRegion}
+							>
+								<ListSubheader>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.randomCountry' })}</ListSubheader>
+								<MenuItem value={'none'}>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.random' })}</MenuItem>
+								<ListSubheader>{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.optionalCountry' })}</ListSubheader>
+								{regions.map((n, i) => {
+									return <MenuItem key={i} value={n}>{n}</MenuItem>
+								})}
+							</Select>
+						</FormControl>
+					}
+					{/* 数据获取失败 */}
+					{
+						!regionLoading && nodeDataError &&
+						<Stack
+							direction="column"
+							justifyContent="center"
+							alignItems="center"
+							spacing={2}
+							sx={{ minHeight: '5rem', width: '100%' }}>
+							<Button size="large" variant="outlined" onClick={getNodeListData} color='primary'>
+								{intl.formatMessage({ id: 'platform.proxy.featureArea8Item.reload' })}
+							</Button>
+						</Stack>
+					}
 
 				</Grid>
 
@@ -446,8 +496,8 @@ const FeatureArea8ItemNew = () => {
 									</Box>
 								}
 								{
-									!regionProgress &&
-									<Button size="large" variant="outlined" onClick={regionConfirm} sx={{ fontFamily: 'inherit', width: '10rem' }}>
+									!regionProgress && !nodeDataError &&
+									<Button Button size="large" variant="outlined" onClick={regionConfirm} sx={{ fontFamily: 'inherit', width: '10rem' }}>
 										{intl.formatMessage({ id: 'platform.proxy.FeatureArea.start' })}
 									</Button>
 								}
