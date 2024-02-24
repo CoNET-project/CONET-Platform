@@ -1,11 +1,6 @@
 import  React, {SetStateAction, Dispatch} from "react"
 import {v4} from 'uuid'
 import {logger} from '../components/App/logger'
-import Async from 'async'
-import web3 from 'web3'
-import store from '../store/store'
-import { setIslivenessRunning } from '../store/appState/appStateActions'
-import {getWorkerService} from '../services/workerService/workerService'
 
 type WorkerCommandErrorType = 'NOT_READY'|'INVALID_DATA'|
 'NO_UUID'|'INVALID_COMMAND'|'OPENPGP_RUNNING_ERROR'|
@@ -16,7 +11,7 @@ type WorkerCommandType = 'READY'|'testPasscode'|'getCONETBalance'|'getRegiestNod
 'newProfile'|'invitation'|'WORKER_MESSAGE'|'startProxy'|'createAccount'|
 'isAddress'|'getFaucet'|'syncAsset'|'sendAsset'|'getUSDCPrice'|'registerReferrer'|'showSRP'|'getAllProfiles'|
 'buyUSDC'|'mintCoNETCash'|'getSINodes'|'getRecipientCoNETCashAddress'|'setRegion'|'ipaddress'|'startLiveness'|'stopLiveness'|
-'isLivenessRunning'|'referrerList'|'getAllNodes'|'getContainer'
+'isLivenessRunning'|'referrerList'|'getAllNodes'|'getContainer'|'importWallet'|'updateProfile'
 
 export type WorkerCallStatus = 'SUCCESS' | 'NOT_READY' | 'UNKNOWN_COMMAND' |
 'TIME_OUT' | 'SYSTEM_ERROR'
@@ -435,7 +430,6 @@ export const getContainer: () => Promise < StartWorkerResolveForAPI > = () => {
 		return postMessage (cmd, true, resolve)
 	})
 }
-
 
 export const referrerList : () => Promise < StartWorkerResolveForAPI > = () => {
     return new Promise( resolve => {

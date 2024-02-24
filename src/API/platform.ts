@@ -133,4 +133,36 @@ export class platform {
 		})
 	})
 
+	public importWallet: (authorizationkey: string, privateKey: string) => Promise<profile[]> = (authorizationkey, privateKey) => new Promise(async resolve=> {
+
+		const cmd: WorkerCommand = {
+            cmd: 'importWallet',
+            uuid: v4(),
+            data: [authorizationkey, privateKey]
+        }
+		return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ([])
+			}
+			const _data = data[0] as profile[]
+			return resolve (_data)
+		})
+	})
+
+	public updateProfile: (authorizationkey: string, profile: profile) => Promise<profile[]> = (authorizationkey, profile) => new Promise(async resolve=> {
+
+		const cmd: WorkerCommand = {
+            cmd: 'importWallet',
+            uuid: v4(),
+            data: [authorizationkey, profile]
+        }
+		return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ([])
+			}
+			const _data = data[0] as profile[]
+			return resolve (_data)
+		})
+	})
+
 }
