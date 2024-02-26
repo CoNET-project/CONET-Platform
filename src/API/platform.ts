@@ -152,7 +152,7 @@ export class platform {
 	public updateProfile: (authorizationkey: string, profile: profile) => Promise<profile[]> = (authorizationkey, profile) => new Promise(async resolve=> {
 
 		const cmd: WorkerCommand = {
-            cmd: 'importWallet',
+            cmd: 'updateProfile',
             uuid: v4(),
             data: [authorizationkey, profile]
         }
