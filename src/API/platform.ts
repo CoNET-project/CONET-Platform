@@ -1,5 +1,5 @@
 
-import {postMessage, getContainer, WorkerCommand} from './index'
+import {postMessage, getContainer, WorkerCommand, initListenState} from './index'
 import {v4} from 'uuid'
 const workerReadyChannel = 'conet-platform'
 const workerProcessChannel = 'workerLoader'
@@ -29,6 +29,17 @@ export interface profile {
 	network: profileNetwork
 	data?: any					//		for UI
 }
+const beforeunload = (event: BeforeUnloadEvent) => {
+	
+	if (typeof event.preventDefault === 'function') {
+		event.preventDefault()
+	}
+	
+	(event || window.event).returnValue = true
+	
+	return true
+	
+}
 
 export type type_platformStatus = 'LOCKED'|'UNLOCKED'|'NONE'|''
 export class platform {
@@ -54,6 +65,13 @@ export class platform {
 		channelStatus.addEventListener('message', (e) => {
 			
 			setPlatformStatus(e.data)
+		})
+
+		initListenState('beforeunload', result => {
+			if (result) {
+				return window.addEventListener('beforeunload', beforeunload)
+			}
+			return window.removeEventListener('beforeunload', beforeunload)
 		})
 		
 		if (setWorkerLoading) {
@@ -165,4 +183,23 @@ export class platform {
 		})
 	})
 
+	public resetPasscode: (oldPasscode: string, newPasscode: string) => Promise<[boolean, string]> = (oldPasscode, newPasscode) => new Promise(async resolve=> {
+
+		const cmd: WorkerCommand = {
+            cmd: 'resetPasscode',
+            uuid: v4(),
+            data: [oldPasscode, newPasscode]
+        }
+
+        return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ([false, ''])
+			}
+			this.authorization_key = data[0]
+			
+			this.setPlatformStatus('UNLOCKED')
+			
+			return resolve ([true, this.authorization_key])
+		})
+	})
 }
