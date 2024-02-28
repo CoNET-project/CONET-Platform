@@ -11,7 +11,7 @@ type WorkerCommandType = 'READY'|'testPasscode'|'getCONETBalance'|'getRegiestNod
 'newProfile'|'invitation'|'WORKER_MESSAGE'|'startProxy'|'createAccount'|
 'isAddress'|'getFaucet'|'syncAsset'|'sendAsset'|'getUSDCPrice'|'registerReferrer'|'showSRP'|'getAllProfiles'|
 'buyUSDC'|'mintCoNETCash'|'getSINodes'|'getRecipientCoNETCashAddress'|'setRegion'|'ipaddress'|'startLiveness'|'stopLiveness'|
-'isLivenessRunning'|'referrerList'|'getAllNodes'|'getContainer'|'importWallet'|'updateProfile'|'resetPasscode'
+'isLivenessRunning'|'referrerList'|'getAllNodes'|'getContainer'|'importWallet'|'updateProfile'|'resetPasscode'|'recoverAccount'
 
 export type WorkerCallStatus = 'SUCCESS' | 'NOT_READY' | 'UNKNOWN_COMMAND' |
 'TIME_OUT' | 'SYSTEM_ERROR'

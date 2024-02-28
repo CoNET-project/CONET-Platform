@@ -53,8 +53,6 @@ export class platform {
 		const result = data[0]
 		return resolve (result.passcode)
 	})
-
-	public authorization_key = ''
 	
 	constructor(private setPlatformStatus: React.Dispatch<React.SetStateAction<type_platformStatus>>, setWorkerLoading: null|React.Dispatch<React.SetStateAction<number>>) {
 		const search = window.location.search
@@ -110,11 +108,11 @@ export class platform {
 			if (err) {
 				return resolve ([false, ''])
 			}
-			this.authorization_key = data[0]
+			const authorization_key = data[0]
 			
 			this.setPlatformStatus('UNLOCKED')
 			
-			return resolve ([true, this.authorization_key])
+			return resolve ([true, authorization_key])
 		})
 	})
 
@@ -195,11 +193,31 @@ export class platform {
 			if (err) {
 				return resolve ([false, ''])
 			}
-			this.authorization_key = data[0]
+			const authorization_key = data[0]
 			
 			this.setPlatformStatus('UNLOCKED')
 			
-			return resolve ([true, this.authorization_key])
+			return resolve ([true, authorization_key])
+		})
+	})
+
+
+	public recoverAccount: (SRP: string, passcode: string) => Promise<[string|null]> = (SRP, passcode) => new Promise(async resolve=> {
+
+		const cmd: WorkerCommand = {
+            cmd: 'recoverAccount',
+            uuid: v4(),
+            data: [passcode, this.referrals]
+        }
+        return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ([null])
+			}
+			const authorization_key = data[0]
+			
+			this.setPlatformStatus('UNLOCKED')
+			
+			return resolve ([authorization_key])
 		})
 	})
 }
