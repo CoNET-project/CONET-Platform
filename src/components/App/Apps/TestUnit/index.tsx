@@ -19,9 +19,9 @@ const TestPage = (platform: platform, authorizationkey: string) => {
 			//		Passcode success
 			const _SRP = await platform.showSRP (authorizationkey)
 			SetSRP(_SRP)
-			const _profiles = await platform.getAllProfiles(authorizationkey)
+			const _profiles = await platform.recoverAccount('pull ceiling talent potato frame pelican huge snow basket session faculty space', '112233')
 			console.log (_profiles)
-			setpProfiles (_profiles)
+			
 		}
 
 		let active = true

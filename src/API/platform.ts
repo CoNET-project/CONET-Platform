@@ -207,7 +207,7 @@ export class platform {
 		const cmd: WorkerCommand = {
             cmd: 'recoverAccount',
             uuid: v4(),
-            data: [passcode, this.referrals]
+            data: [SRP, passcode]
         }
         return postMessage (cmd, false, null, (err, data) => {
 			if (err) {
