@@ -181,6 +181,22 @@ export class platform {
 		})
 	})
 
+	public addProfile: (authorizationkey: string, data: any) => Promise<profile[]> = (authorizationkey, data) => new Promise(async resolve=> {
+
+		const cmd: WorkerCommand = {
+            cmd: 'addProfile',
+            uuid: v4(),
+            data: [authorizationkey, data]
+        }
+		return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ([])
+			}
+			const _data = data[0] as profile[]
+			return resolve (_data)
+		})
+	})
+
 	public resetPasscode: (oldPasscode: string, newPasscode: string) => Promise<[boolean, string]> = (oldPasscode, newPasscode) => new Promise(async resolve=> {
 
 		const cmd: WorkerCommand = {
@@ -200,7 +216,6 @@ export class platform {
 			return resolve ([true, authorization_key])
 		})
 	})
-
 
 	public recoverAccount: (SRP: string, passcode: string) => Promise<[string|null]> = (SRP, passcode) => new Promise(async resolve=> {
 

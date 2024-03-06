@@ -194,7 +194,7 @@ const DashBoard = () => {
 		switch (conetPlatform) {
 
 			case 'NONE': {
-				return CreateWallet(conet_platform.createAccount)
+				return CreateWallet(conet_platform.createAccount, setConetPlatform)
 			}
 			case 'LOCKED': {
 				return UnLockWallet(conet_platform.testPasscode, setAuthorization_key)

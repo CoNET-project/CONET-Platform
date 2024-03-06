@@ -11,6 +11,7 @@ const TestPage = (platform: platform, authorizationkey: string) => {
 
 	const [SRP, SetSRP] = useState('')
 	const [profiles, setpProfiles] = useState<profile[]>()
+
 	useEffect(() => {
 		const fetchData = async () => {
 			if (!active) {
@@ -19,9 +20,9 @@ const TestPage = (platform: platform, authorizationkey: string) => {
 			//		Passcode success
 			const _SRP = await platform.showSRP (authorizationkey)
 			SetSRP(_SRP)
-			const _profiles = await platform.recoverAccount('pull ceiling talent potato frame pelican huge snow basket session faculty space', '112233')
+			const _profiles = await platform.getAllProfiles(authorizationkey)
 			console.log (_profiles)
-			
+			setpProfiles(_profiles)
 		}
 
 		let active = true
@@ -39,13 +40,26 @@ const TestPage = (platform: platform, authorizationkey: string) => {
 						TEST PAGE
 					</Typography>
 					
+
+					
 			</Grid>
+
 			<Grid item sx={{}} >
 
 					<Typography variant="body1" sx={{ fontWeight: '600' }}>
 						SRP = {SRP}
 					</Typography>
 					
+			</Grid>
+			<Grid item sx={{}} >
+				{
+					profiles?.length &&
+					<Typography variant="body1" sx={{ }}>
+						privateKeyArmor = {profiles[0].keyID}
+					</Typography>
+					
+				}
+				
 			</Grid>
 
 		</Grid>

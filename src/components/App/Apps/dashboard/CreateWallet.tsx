@@ -13,8 +13,11 @@ import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
 import useAppState from "../../../../store/appState/useAppState"
+import store from '../../../../store/store'
+import {setDAPPOpen, setIsUnlocked} from "../../../../store/appState/appStateActions"
+import {platform, type_platformStatus } from '../../../../API/platform'
 
-const CreateWallet = (createAccount: (passcode: string) => Promise<string>) => {
+const CreateWallet = (createAccount: (passcode: string) => Promise<string>, setConetPlatform: React.Dispatch<React.SetStateAction<type_platformStatus>>) => {
     const {
         locale, 
         setLocale,
@@ -42,7 +45,8 @@ const CreateWallet = (createAccount: (passcode: string) => Promise<string>) => {
         }
         setLoading(true)
         await createAccount(password)
-        location.reload()
+        //		test unlock
+		return setConetPlatform('LOCKED')
     }
 
 
