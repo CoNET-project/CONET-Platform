@@ -197,6 +197,23 @@ export class platform {
 		})
 	})
 
+
+	public getRefereesList: (authorizationkey: string, wallet_public_key: string) => Promise<profile[]> = (authorizationkey, wallet_public_key) => new Promise(async resolve=> {
+
+		const cmd: WorkerCommand = {
+            cmd: 'getRefereesList',
+            uuid: v4(),
+            data: [authorizationkey, wallet_public_key]
+        }
+		return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ([])
+			}
+			const _data = data[0]
+			return resolve (_data)
+		})
+	})
+
 	public resetPasscode: (oldPasscode: string, newPasscode: string) => Promise<[boolean, string]> = (oldPasscode, newPasscode) => new Promise(async resolve=> {
 
 		const cmd: WorkerCommand = {
