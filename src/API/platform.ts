@@ -252,4 +252,19 @@ export class platform {
 			return resolve ([authorization_key])
 		})
 	})
+
+	public getAssetsPrice: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'getAssetsPrice',
+            uuid: v4(),
+            data: []
+        }
+		return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ('')
+			}
+			const _data = data[0]
+			return resolve (_data)
+		})
+	})
 }
