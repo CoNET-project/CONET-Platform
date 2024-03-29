@@ -81,12 +81,12 @@ export class platform {
 	
 	}
 
-	public createAccount: (passcode: string) => Promise<string> = (passcode) => new Promise(async resolve=> {
+	public createAccount: (passcode: string, preferences: any) => Promise<string> = (passcode, preferences) => new Promise(async resolve=> {
 
 		const cmd: WorkerCommand = {
             cmd: 'createAccount',
             uuid: v4(),
-            data: [passcode, this.referrals]
+            data: [passcode, this.referrals, preferences]
         }
         return postMessage (cmd, false, null, (err, data) => {
 			if (err) {
@@ -258,6 +258,21 @@ export class platform {
             cmd: 'getAssetsPrice',
             uuid: v4(),
             data: []
+        }
+		return postMessage (cmd, false, null, (err, data) => {
+			if (err) {
+				return resolve ('')
+			}
+			const _data = data[0]
+			return resolve (_data)
+		})
+	})
+
+	public CONETFaucet: (walletPublicAddress: string) => Promise<type_platformStatus> = (walletPublicAddress) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'CONETFaucet',
+            uuid: v4(),
+            data: [walletPublicAddress]
         }
 		return postMessage (cmd, false, null, (err, data) => {
 			if (err) {
