@@ -1,8 +1,12 @@
 
+import logger from '../utilities/logger/logger'
 import {postMessage, getContainer, WorkerCommand, initListenState} from './index'
 import {v4} from 'uuid'
+
 const workerReadyChannel = 'conet-platform'
 const workerProcessChannel = 'workerLoader'
+const channelWrokerListenName = 'toFrontEnd'
+
 interface tokenHistory {
 
 }
@@ -40,6 +44,11 @@ const beforeunload = (event: BeforeUnloadEvent) => {
 	return true
 	
 }
+type command = 'profileVer'
+interface channelWroker {
+	cmd: command,
+	data: any[]
+}
 
 export type type_platformStatus = 'LOCKED'|'UNLOCKED'|'NONE'|''
 export class platform {
@@ -53,17 +62,40 @@ export class platform {
 		const result = data[0]
 		return resolve (result.passcode)
 	})
+
+	private profileVerHook: React.Dispatch<React.SetStateAction<number>>|undefined
 	
-	constructor(private setPlatformStatus: React.Dispatch<React.SetStateAction<type_platformStatus>>, setWorkerLoading: null|React.Dispatch<React.SetStateAction<number>>) {
+	constructor(private setPlatformStatus?: React.Dispatch<React.SetStateAction<type_platformStatus>>, setWorkerLoading?: React.Dispatch<React.SetStateAction<number>>) {
 		const search = window.location.search
 		this.referrals = search ? search.split('=')[1]: ''
-		const channelStatus = new BroadcastChannel(workerReadyChannel)
-		const workerProcess = new BroadcastChannel(workerProcessChannel)
 		
-		channelStatus.addEventListener('message', (e) => {
+		
+		const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
+		profileVerChannel.addEventListener('message', e => {
+			const cmd: channelWroker = e.data
 			
-			setPlatformStatus(e.data)
+			switch (cmd.cmd) {
+				case 'profileVer' : {
+					logger.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
+					if (this.profileVerHook) {
+						this.profileVerHook(cmd.data[0])
+					}
+					return
+				}
+				default : {
+					logger.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
+				}
+			}
+			
 		})
+
+		if (setPlatformStatus) {
+			const channelStatus = new BroadcastChannel(workerReadyChannel)
+			channelStatus.addEventListener('message', (e) => {
+			
+				setPlatformStatus(e.data)
+			})
+		}
 
 		initListenState('beforeunload', result => {
 			if (result) {
@@ -73,6 +105,7 @@ export class platform {
 		})
 		
 		if (setWorkerLoading) {
+			const workerProcess = new BroadcastChannel(workerProcessChannel)
 			workerProcess.addEventListener('message', (e) => {
 				setWorkerLoading(e.data)
 				console.log(`workerProcess: [${e.data}]`)
@@ -97,20 +130,25 @@ export class platform {
 		})
 	})
 
-	public testPasscode: (passcode: string) => Promise<[boolean, string]> = (passcode) => new Promise(async resolve=> {
+	public testPasscode: (passcode: string, profileVerHook: React.Dispatch<React.SetStateAction<number>>|undefined) => Promise<[boolean, string]> = (passcode, profileVerHook) => new Promise(async resolve=> {
 
 		const cmd: WorkerCommand = {
             cmd: 'testPasscode',
             uuid: v4(),
             data: [passcode, this.referrals]
         }
+		if (profileVerHook) {
+			this.profileVerHook = profileVerHook
+		}
         return postMessage (cmd, false, null, (err, data) => {
 			if (err) {
 				return resolve ([false, ''])
 			}
 			const authorization_key = data[0]
+			if (this.setPlatformStatus) {
+				this.setPlatformStatus('UNLOCKED')
+			}
 			
-			this.setPlatformStatus('UNLOCKED')
 			
 			return resolve ([true, authorization_key])
 		})
@@ -197,7 +235,6 @@ export class platform {
 		})
 	})
 
-
 	public getRefereesList: (authorizationkey: string, wallet_public_key: string) => Promise<profile[]> = (authorizationkey, wallet_public_key) => new Promise(async resolve=> {
 
 		const cmd: WorkerCommand = {
@@ -227,8 +264,10 @@ export class platform {
 				return resolve ([false, ''])
 			}
 			const authorization_key = data[0]
+			if (this.setPlatformStatus) {
+				this.setPlatformStatus('UNLOCKED')
+			}
 			
-			this.setPlatformStatus('UNLOCKED')
 			
 			return resolve ([true, authorization_key])
 		})
@@ -246,8 +285,10 @@ export class platform {
 				return resolve ([null])
 			}
 			const authorization_key = data[0]
+			if (this.setPlatformStatus) {
+				this.setPlatformStatus('UNLOCKED')
+			}
 			
-			this.setPlatformStatus('UNLOCKED')
 			
 			return resolve ([authorization_key])
 		})

@@ -34,4 +34,4 @@ const getLogger = (
     return logger
 }
 
-export default getLogger('seguro-platform')
+export default getLogger('CONET-Platform')
