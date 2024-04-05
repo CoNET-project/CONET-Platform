@@ -147,10 +147,6 @@ export class platform {
 				return resolve ([false, ''])
 			}
 			const authorization_key = data[0]
-			if (this.setPlatformStatus) {
-				this.setPlatformStatus('UNLOCKED')
-			}
-			
 			
 			return resolve ([true, authorization_key])
 		})
@@ -266,11 +262,7 @@ export class platform {
 				return resolve ([false, ''])
 			}
 			const authorization_key = data[0]
-			if (this.setPlatformStatus) {
-				this.setPlatformStatus('UNLOCKED')
-			}
-			
-			
+
 			return resolve ([true, authorization_key])
 		})
 	})
@@ -287,10 +279,6 @@ export class platform {
 				return resolve ([null])
 			}
 			const authorization_key = data[0]
-			if (this.setPlatformStatus) {
-				this.setPlatformStatus('UNLOCKED')
-			}
-			
 			
 			return resolve ([authorization_key])
 		})
@@ -323,6 +311,21 @@ export class platform {
 			}
 			const _data = data[0]
 			return resolve (_data)
+		})
+	})
+
+	public prePurchase: (modes: number, amount: string, purchaseProfile: profile, payAssetName: string) => Promise<type_platformStatus> = (modes, amount, purchaseProfile: profile, payAssetName: string) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'prePurchase',
+            uuid: v4(),
+            data: [modes, amount, purchaseProfile, payAssetName]
+        }
+		return postMessage (cmd, false, null, (err, data: any) => {
+			if (err) {
+				return resolve ('')
+			}
+			
+			return resolve (data)
 		})
 	})
 }
