@@ -51,8 +51,26 @@ interface channelWroker {
 }
 
 export type type_platformStatus = 'LOCKED'|'UNLOCKED'|'NONE'|''
+
+const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>) => {
+	let cmd: channelWroker
+	try {
+		cmd = JSON.parse(e.data)
+	} catch (ex) {
+		return console.log(`profileVerChannel JSON.parse(e.data[${e.data}]) Error!`)
+	}
+	
+	switch (cmd.cmd) {
+		case 'profileVer' : {
+			console.log('profileVerChannel', `profileVer from backend [${cmd.data}]`)
+			return profileVerHook(cmd.data[0])
+		}
+		default : {
+			return console.log(`profileVerChannelListening unknow comd [${ cmd.cmd }] from backend [${ cmd.data }]`)
+		}
+	}
+}
 export class platform {
-	private referrals = ''
 
 	public passcode: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
 		const [success, data] = await getContainer()
@@ -63,36 +81,12 @@ export class platform {
 		return resolve (result.passcode)
 	})
 
-	private profileVerHook: React.Dispatch<React.SetStateAction<number>>|undefined
 	
 	constructor(private setPlatformStatus?: React.Dispatch<React.SetStateAction<type_platformStatus>>, setWorkerLoading?: React.Dispatch<React.SetStateAction<number>>) {
-		const search = window.location.search
-		this.referrals = search ? search.split('=')[1]: ''
 		
 		
-		const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
-		profileVerChannel.addEventListener('message', e => {
-			let cmd: channelWroker
-			try {
-				cmd = JSON.parse(e.data)
-			} catch (ex) {
-				return console.log(`profileVerChannel JSON.parse(e.data[${e.data}]) Error!`)
-			}
-			
-			switch (cmd.cmd) {
-				case 'profileVer' : {
-					console.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
-					if (this.profileVerHook) {
-						this.profileVerHook(cmd.data[0])
-					}
-					return
-				}
-				default : {
-					console.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
-				}
-			}
-			
-		})
+		
+		
 
 		if (setPlatformStatus) {
 			const channelStatus = new BroadcastChannel(workerReadyChannel)
@@ -120,11 +114,12 @@ export class platform {
 	}
 
 	public createAccount: (passcode: string, preferences: any) => Promise<string> = (passcode, preferences) => new Promise(async resolve=> {
-
+		const search = window.location.search
+		const referrals = search ? search.split('=')[1]: ''
 		const cmd: WorkerCommand = {
             cmd: 'createAccount',
             uuid: v4(),
-            data: [passcode, this.referrals, preferences]
+            data: [passcode, referrals, preferences]
         }
         return postMessage (cmd, false, null, (err, data) => {
 			if (err) {
@@ -136,14 +131,16 @@ export class platform {
 	})
 
 	public testPasscode: (passcode: string, profileVerHook: React.Dispatch<React.SetStateAction<number>>|undefined) => Promise<[boolean, string]> = (passcode, profileVerHook) => new Promise(async resolve=> {
-
+		const search = window.location.search
+		const referrals = search ? search.split('=')[1]: ''
 		const cmd: WorkerCommand = {
             cmd: 'testPasscode',
             uuid: v4(),
-            data: [passcode, this.referrals]
+            data: [passcode, referrals]
         }
 		if (profileVerHook) {
-			this.profileVerHook = profileVerHook
+			const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
+			profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, profileVerHook))
 		}
         return postMessage (cmd, false, null, (err, data) => {
 			if (err) {
