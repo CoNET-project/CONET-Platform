@@ -72,18 +72,23 @@ export class platform {
 		
 		const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
 		profileVerChannel.addEventListener('message', e => {
-			const cmd: channelWroker = e.data
+			let cmd: channelWroker
+			try {
+				cmd = JSON.parse(e.data)
+			} catch (ex) {
+				return console.log(`profileVerChannel JSON.parse(e.data[${e.data}]) Error!`)
+			}
 			
 			switch (cmd.cmd) {
 				case 'profileVer' : {
-					logger.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
+					console.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
 					if (this.profileVerHook) {
 						this.profileVerHook(cmd.data[0])
 					}
 					return
 				}
 				default : {
-					logger.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
+					console.log('profileVerChannel', `New Message from backend [${cmd}] profileVerHook [${ this.profileVerHook!== undefined }]`)
 				}
 			}
 			
