@@ -52,6 +52,12 @@ interface channelWroker {
 
 export type type_platformStatus = 'LOCKED'|'UNLOCKED'|'NONE'|''
 
+
+export const listeningVersionHook = (profileVerHook: React.Dispatch<React.SetStateAction<number>>) => {
+	const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
+	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, profileVerHook))
+}
+
 const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>) => {
 	let cmd: channelWroker
 	try {
@@ -62,8 +68,11 @@ const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.
 	
 	switch (cmd.cmd) {
 		case 'profileVer' : {
-			console.log('profileVerChannel', `profileVer from backend [${cmd.data}]`)
-			return profileVerHook(cmd.data[0])
+			
+			if (profileVerHook) {
+				return profileVerHook(cmd.data[0])
+			}
+			return console.log('profileVerChannelListening Error! profileVerHook === null', `profileVer from backend [${cmd.data}]`)
 		}
 		default : {
 			return console.log(`profileVerChannelListening unknow comd [${ cmd.cmd }] from backend [${ cmd.data }]`)
