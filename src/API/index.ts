@@ -392,11 +392,11 @@ export const initListenState = (listenState: listenState, dispatch: Dispatch<Set
         workerList.splice(workerList.findIndex(item => item.key === listenState), 1)
     }
 	const channel = new BroadcastChannel(listenState)
-	logger(`initListenState on ${listenState} `)
+	//logger(`initListenState on ${listenState} `)
 	const listen = (e: MessageEvent<any>) => {
 		const data = JSON.parse(e.data)
 		// @ts-ignore
-		logger(`initListenState channel name [${e?.currentTarget?.name}] got [${data}]`)
+		//logger(`initListenState channel name [${e?.currentTarget?.name}] got [${data}]`)
 		dispatch(data)
 	}
     channel.addEventListener('message', listen)
