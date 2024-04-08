@@ -44,7 +44,7 @@ const beforeunload = (event: BeforeUnloadEvent) => {
 	return true
 	
 }
-type command = 'profileVer'
+type command = 'profileVer'|'assets'
 interface channelWroker {
 	cmd: command,
 	data: any[]
@@ -58,7 +58,12 @@ export const listeningVersionHook = (profileVerHook: React.Dispatch<React.SetSta
 	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, profileVerHook))
 }
 
-const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>) => {
+export const listeningAssetsHook = (assetsHook: React.Dispatch<React.SetStateAction<number>>) => {
+	const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
+	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, assetsHook))
+}
+
+const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>|null = null, assetsHook:React.Dispatch<React.SetStateAction<number>>|null = null) => {
 	let cmd: channelWroker
 	try {
 		cmd = JSON.parse(e.data)
@@ -72,10 +77,17 @@ const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.
 			if (profileVerHook) {
 				return profileVerHook(cmd.data[0])
 			}
-			return console.log('profileVerChannelListening Error! profileVerHook === null', `profileVer from backend [${cmd.data}]`)
+			return console.log('profileVerChannelListening  profileVerHook === null', `profileVer from backend [${cmd.data}]`)
+		}
+
+		case 'assets': {
+			if (assetsHook) {
+				return assetsHook(cmd.data[0])
+			}
+			return console.log('profileVerChannelListening assetsHook === null', `profileVer from backend [${cmd.data}]`)
 		}
 		default : {
-			return console.log(`profileVerChannelListening unknow comd [${ cmd.cmd }] from backend [${ cmd.data }]`)
+			return console.log(`profileVerChannelListening unknow command [${ cmd.cmd }] from backend [${ cmd.data }]`)
 		}
 	}
 }

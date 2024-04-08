@@ -231,11 +231,11 @@ export const postMessage = (cmd: WorkerCommand, close: boolean,  resolve: any, C
     channel.close()
 }
 
-export const faucet: () => Promise < StartWorkerResolveForAPI > = () => {
+export const faucet: (walletAddr: string) => Promise < StartWorkerResolveForAPI > = (walletAddr) => {
     return new Promise( resolve => {
         const cmd: WorkerCommand = {
             cmd: 'getFaucet',
-            data: [],
+            data: [walletAddr],
             uuid: v4()
         }
         return postMessage (cmd, true, resolve)
@@ -352,7 +352,6 @@ export const stopLiveness: () => Promise < StartWorkerResolveForAPI > = () => {
         return postMessage (cmd, true, resolve)
 	})
 }
-
 
 export const isLivenessRunning: (callback: (err: string, data: string[]) => void) => Promise < StartWorkerResolveForAPI > = (callback) => {
 	
