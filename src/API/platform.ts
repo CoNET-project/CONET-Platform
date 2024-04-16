@@ -376,4 +376,19 @@ export class platform {
 			return resolve (data)
 		})
 	})
+
+	public fx168PrePurchase: (modes: number) => Promise<type_platformStatus> = (modes) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'fx168PrePurchase',
+            uuid: v4(),
+            data: [modes]
+        }
+		return postMessage (cmd, false, null, (err, data: any) => {
+			if (err) {
+				return resolve ('')
+			}
+			
+			return resolve (data)
+		})
+	})
 }
