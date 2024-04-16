@@ -44,26 +44,30 @@ const beforeunload = (event: BeforeUnloadEvent) => {
 	return true
 	
 }
-type command = 'profileVer'|'assets'
+type command = 'profileVer'|'assets'|'purchaseStatus'
 interface channelWroker {
 	cmd: command,
 	data: any[]
 }
 
 export type type_platformStatus = 'LOCKED'|'UNLOCKED'|'NONE'|''
-
+const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
 
 export const listeningVersionHook = (profileVerHook: React.Dispatch<React.SetStateAction<number>>) => {
-	const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
 	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, profileVerHook))
 }
 
 export const listeningAssetsHook = (assetsHook: React.Dispatch<React.SetStateAction<number>>) => {
-	const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
 	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, assetsHook))
 }
 
-const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>|null = null, assetsHook:React.Dispatch<React.SetStateAction<number>>|null = null) => {
+export const listeningGuardianPurchaseHook = (purchaseHook: React.Dispatch<React.SetStateAction<number>>) => {
+	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, null, purchaseHook))
+}
+
+const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>|null = null,
+	assetsHook:React.Dispatch<React.SetStateAction<number>>|null = null, 
+	purchaseHook:React.Dispatch<React.SetStateAction<number>>|null = null) => {
 	let cmd: channelWroker
 	try {
 		cmd = JSON.parse(e.data)
@@ -77,20 +81,28 @@ const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.
 			if (profileVerHook) {
 				return profileVerHook(cmd.data[0])
 			}
-			return console.log('profileVerChannelListening  profileVerHook === null', `profileVer from backend [${cmd.data}]`)
+			return console.log('profileVerHook  profileVerHook === null', `profileVer data [${cmd.data}]`)
 		}
 
 		case 'assets': {
 			if (assetsHook) {
 				return assetsHook(cmd.data[0])
 			}
-			return console.log('profileVerChannelListening assetsHook === null', `profileVer from backend [${cmd.data}]`)
+			return console.log('assets assetsHook === null', `assets from backend [${cmd.data}]`)
+		}
+
+		case 'purchaseStatus': {
+			if (purchaseHook) {
+				return purchaseHook(cmd.data[0])
+			}
+			return console.log('purchaseStatus purchaseHook === null', `purchaseStatus =[${cmd.data[0]}]`)
 		}
 		default : {
 			return console.log(`profileVerChannelListening unknow command [${ cmd.cmd }] from backend [${ cmd.data }]`)
 		}
 	}
 }
+
 export class platform {
 
 	public passcode: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
@@ -338,6 +350,21 @@ export class platform {
 	public prePurchase: (modes: number, amount: string, purchaseProfile: profile, payAssetName: string) => Promise<type_platformStatus> = (modes, amount, purchaseProfile: profile, payAssetName: string) => new Promise(async resolve=> {
 		const cmd: WorkerCommand = {
             cmd: 'prePurchase',
+            uuid: v4(),
+            data: [modes, amount, purchaseProfile, payAssetName]
+        }
+		return postMessage (cmd, false, null, (err, data: any) => {
+			if (err) {
+				return resolve ('')
+			}
+			
+			return resolve (data)
+		})
+	})
+
+	public guardianPurchase: (modes: number, amount: string, purchaseProfile: profile, payAssetName: string) => Promise<type_platformStatus> = (modes, amount, purchaseProfile: profile, payAssetName: string) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'guardianPurchase',
             uuid: v4(),
             data: [modes, amount, purchaseProfile, payAssetName]
         }
