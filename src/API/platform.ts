@@ -44,7 +44,7 @@ const beforeunload = (event: BeforeUnloadEvent) => {
 	return true
 	
 }
-type command = 'profileVer'|'assets'|'purchaseStatus'
+type command = 'profileVer'|'assets'|'purchaseStatus'|'miningStatus'
 interface channelWroker {
 	cmd: command,
 	data: any[]
@@ -65,9 +65,24 @@ export const listeningGuardianPurchaseHook = (purchaseHook: React.Dispatch<React
 	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, null, purchaseHook))
 }
 
-const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.Dispatch<React.SetStateAction<number>>|null = null,
+interface mining {
+    blockNumber: number
+    CCNTP_total_balance: string
+    Updated_balace: string                //    CCNTP_total_balance - Last_balance
+    status: 'mining'|'stoped'
+    profile: profile
+}
+
+export const listeningMiningHook = (miningHook: React.Dispatch<React.SetStateAction<mining>>) => {
+	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, null, null, miningHook))
+}
+
+const profileVerChannelListening = (e: MessageEvent<any>, 
+	profileVerHook: React.Dispatch<React.SetStateAction<number>>|null = null,
 	assetsHook:React.Dispatch<React.SetStateAction<number>>|null = null, 
-	purchaseHook:React.Dispatch<React.SetStateAction<number>>|null = null) => {
+	purchaseHook:React.Dispatch<React.SetStateAction<number>>|null = null,
+	miningHook: React.Dispatch<React.SetStateAction<mining>>|null = null
+) => {
 	let cmd: channelWroker
 	try {
 		cmd = JSON.parse(e.data)
@@ -81,22 +96,30 @@ const profileVerChannelListening = (e: MessageEvent<any>, profileVerHook: React.
 			if (profileVerHook) {
 				return profileVerHook(cmd.data[0])
 			}
-			return console.log('profileVerHook  profileVerHook === null', `profileVer data [${cmd.data}]`)
+			return 
 		}
 
 		case 'assets': {
 			if (assetsHook) {
 				return assetsHook(cmd.data[0])
 			}
-			return console.log('assets assetsHook === null', `assets from backend [${cmd.data}]`)
+			return 
 		}
 
 		case 'purchaseStatus': {
 			if (purchaseHook) {
 				return purchaseHook(cmd.data[0])
 			}
-			return console.log('purchaseStatus purchaseHook === null', `purchaseStatus =[${cmd.data[0]}]`)
+			return 
 		}
+
+		case 'miningStatus': {
+			if (miningHook) {
+				return miningHook(cmd.data[0])
+			}
+			return console.log('purchaseStatus miningStatus === null', `miningStatus =[${cmd.data[0]}]`)
+		}
+
 		default : {
 			return console.log(`profileVerChannelListening unknow command [${ cmd.cmd }] from backend [${ cmd.data }]`)
 		}
@@ -386,6 +409,21 @@ export class platform {
 		return postMessage (cmd, false, null, (err, data: any) => {
 			if (err) {
 				return resolve ('')
+			}
+			
+			return resolve (data[0])
+		})
+	})
+
+	public startMining: (authorizationKey: string, profile: profile) => Promise<type_platformStatus> = (authorizationKey, profile) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'startMining',
+            uuid: v4(),
+            data: [authorizationKey, profile]
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
 			}
 			
 			return resolve (data[0])

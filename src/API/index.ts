@@ -12,7 +12,7 @@ type WorkerCommandType = 'READY'|'testPasscode'|'getCONETBalance'|'getRegiestNod
 'isAddress'|'getFaucet'|'syncAsset'|'sendAsset'|'getUSDCPrice'|'registerReferrer'|'showSRP'|'getAllProfiles'|
 'buyUSDC'|'mintCoNETCash'|'getSINodes'|'getRecipientCoNETCashAddress'|'setRegion'|'ipaddress'|'startLiveness'|'stopLiveness'|
 'isLivenessRunning'|'getRefereesList'|'getAllNodes'|'getContainer'|'importWallet'|'updateProfile'|'resetPasscode'|'recoverAccount'|'addProfile'|
-'getAssetsPrice'|'CONETFaucet'|'prePurchase'|'guardianPurchase'|'fx168PrePurchase'
+'getAssetsPrice'|'CONETFaucet'|'prePurchase'|'guardianPurchase'|'fx168PrePurchase'|'startMining'
 
 export type WorkerCallStatus = 'SUCCESS' | 'NOT_READY' | 'UNKNOWN_COMMAND' |
 'TIME_OUT' | 'SYSTEM_ERROR'
