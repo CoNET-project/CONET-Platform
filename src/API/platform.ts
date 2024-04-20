@@ -388,7 +388,7 @@ export class platform {
 				return resolve ('')
 			}
 			
-			return resolve (data)
+			return resolve (data[0])
 		})
 	})
 }
