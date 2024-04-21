@@ -429,4 +429,19 @@ export class platform {
 			return resolve (data[0])
 		})
 	})
+
+	public stopMining: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'stoptMining',
+            uuid: v4(),
+            data: []
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
+			}
+			
+			return resolve (data[0])
+		})
+	})
 }
