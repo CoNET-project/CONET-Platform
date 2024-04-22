@@ -432,7 +432,7 @@ export class platform {
 
 	public stopMining: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
 		const cmd: WorkerCommand = {
-            cmd: 'stoptMining',
+            cmd: 'stopMining',
             uuid: v4(),
             data: []
         }
