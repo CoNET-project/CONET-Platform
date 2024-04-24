@@ -444,4 +444,19 @@ export class platform {
 			return resolve (data[0])
 		})
 	})
+
+	public claimToken: (profile: profile, assetName: string) => Promise<type_platformStatus> = (profile, assetName) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'claimToken',
+            uuid: v4(),
+            data: [profile, assetName]
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
+			}
+			
+			return resolve (data[0])
+		})
+	})
 }
