@@ -52,17 +52,30 @@ interface channelWroker {
 
 export type type_platformStatus = 'LOCKED'|'UNLOCKED'|'NONE'|''
 const profileVerChannel = new BroadcastChannel(channelWrokerListenName)
+const listeningPool: Map<string, (e: MessageEvent<any>) => void> = new Map()
 
+const listeningManager = (key: string, fun: (e: MessageEvent<any>) => void) => {
+	const listening = listeningPool.get (key)
+	if (listening) {
+		profileVerChannel.removeEventListener('message', listening)
+	}
+	listeningPool.set(key, fun)
+	profileVerChannel.addEventListener('message', fun)
+
+}
 export const listeningVersionHook = (profileVerHook: React.Dispatch<React.SetStateAction<number>>) => {
-	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, profileVerHook))
+	const fun = (e: MessageEvent<any>) => profileVerChannelListening(e, profileVerHook)
+	return listeningManager ('listeningVersionHook', fun)
 }
 
 export const listeningAssetsHook = (assetsHook: React.Dispatch<React.SetStateAction<number>>) => {
-	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, assetsHook))
+	const fun = (e: MessageEvent<any>) => profileVerChannelListening(e, null, assetsHook)
+	return listeningManager('listeningAssetsHook', fun)
 }
 
 export const listeningGuardianPurchaseHook = (purchaseHook: React.Dispatch<React.SetStateAction<number>>) => {
-	profileVerChannel.addEventListener('message', e => profileVerChannelListening(e, null, null, purchaseHook))
+	const fun = (e: MessageEvent<any>) => profileVerChannelListening(e, null, null, purchaseHook)
+	return listeningManager('listeningGuardianPurchaseHook', fun)
 }
 
 interface mining {
