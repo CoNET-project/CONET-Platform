@@ -462,7 +462,7 @@ export class platform {
 		const cmd: WorkerCommand = {
             cmd: 'unlock_cCNTP',
             uuid: v4(),
-            data: []
+            data: [profile]
         }
 		return postMessage (cmd, false, null, (err: any, data: any) => {
 			if (err) {
