@@ -6,7 +6,7 @@ type WorkerCommandErrorType = 'NOT_READY'|'INVALID_DATA'|
 'NO_UUID'|'INVALID_COMMAND'|'OPENPGP_RUNNING_ERROR'|
 'PouchDB_ERROR'|'GENERATE_PASSCODE_ERROR'|'FAILURE'|'COUNTDOWN'
 
-type WorkerCommandType = 'READY'|'testPasscode'|'getCONETBalance'|'getRegiestNodes'|
+type WorkerCommandType = 'READY'|'testPasscode'|'getCONETBalance'|'getRegiestNodes'|'unlock_cCNTP'|
 'encrypt_createPasscode'|'encrypt_lock'|'encrypt_deletePasscode'|'storePreferences'|
 'newProfile'|'invitation'|'WORKER_MESSAGE'|'startProxy'|'createAccount'|
 'isAddress'|'getFaucet'|'syncAsset'|'sendAsset'|'getUSDCPrice'|'registerReferrer'|'showSRP'|'getAllProfiles'|
