@@ -458,7 +458,7 @@ export class platform {
 		})
 	})
 
-	public unlock_cCNTP: (profile: profile) => Promise<type_platformStatus> = () => new Promise(async resolve=> {
+	public unlock_cCNTP: (profile: profile) => Promise<type_platformStatus> = (profile) => new Promise(async resolve=> {
 		const cmd: WorkerCommand = {
             cmd: 'unlock_cCNTP',
             uuid: v4(),
