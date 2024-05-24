@@ -473,6 +473,36 @@ export class platform {
 		})
 	})
 
+	public preBurnCCNTP: (profile: profile, total: string) => Promise<type_platformStatus> = (profile, total) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'preBurnCCNTP',
+            uuid: v4(),
+            data: [profile, total]
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
+			}
+			
+			return resolve (data[0])
+		})
+	})
+
+	public burnCCNTP: (profile: profile, total: string) => Promise<type_platformStatus> = (profile, total) => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'burnCCNTP',
+            uuid: v4(),
+            data: [profile, total]
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
+			}
+			
+			return resolve (data[0])
+		})
+	})
+
 	public claimToken: (profile: profile, assetName: string) => Promise<type_platformStatus> = (profile, assetName) => new Promise(async resolve=> {
 		const cmd: WorkerCommand = {
             cmd: 'claimToken',
