@@ -503,6 +503,21 @@ export class platform {
 		})
 	})
 
+	public getGuardianRegion: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'getGuardianRegion',
+            uuid: v4(),
+            data: []
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
+			}
+			
+			return resolve (data[0])
+		})
+	})
+
 	public claimToken: (profile: profile, assetName: string) => Promise<type_platformStatus> = (profile, assetName) => new Promise(async resolve=> {
 		const cmd: WorkerCommand = {
             cmd: 'claimToken',
