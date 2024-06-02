@@ -7,7 +7,7 @@ type WorkerCommandErrorType = 'NOT_READY'|'INVALID_DATA'|
 'PouchDB_ERROR'|'GENERATE_PASSCODE_ERROR'|'FAILURE'|'COUNTDOWN'
 
 type WorkerCommandType = 'READY'|'testPasscode'|'getCONETBalance'|'getRegiestNodes'|'unlock_cCNTP'|
-'encrypt_createPasscode'|'encrypt_lock'|'encrypt_deletePasscode'|'storePreferences'|'burnCCNTP'|
+'encrypt_createPasscode'|'encrypt_lock'|'encrypt_deletePasscode'|'storePreferences'|'burnCCNTP'|'getAllOtherAssets'|
 'newProfile'|'invitation'|'WORKER_MESSAGE'|'startProxy'|'createAccount'|'preBurnCCNTP'|'getGuardianRegion'|
 'isAddress'|'getFaucet'|'syncAsset'|'sendAsset'|'getUSDCPrice'|'registerReferrer'|'showSRP'|'getAllProfiles'|
 'buyUSDC'|'mintCoNETCash'|'getSINodes'|'getRecipientCoNETCashAddress'|'setRegion'|'ipaddress'|'startLiveness'|'stopLiveness'|

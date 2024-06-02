@@ -532,4 +532,19 @@ export class platform {
 			return resolve (data[0])
 		})
 	})
+
+	public getAllOtherAssets: () => Promise<type_platformStatus> = () => new Promise(async resolve=> {
+		const cmd: WorkerCommand = {
+            cmd: 'getAllOtherAssets',
+            uuid: v4(),
+            data: []
+        }
+		return postMessage (cmd, false, null, (err: any, data: any) => {
+			if (err) {
+				return resolve (err)
+			}
+			
+			return resolve (data[0])
+		})
+	})
 }
