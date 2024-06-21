@@ -8,6 +8,13 @@ The CONET Platform Application.
 yarn
 ```
 
+### This is the beginning of CoNET project
+### now migrate to
+## The new era of CoNET
+
+### New Link here:
+https://github.com/CoNET-project/CONET-Platform
+
 ## Build
 
 ### Web
