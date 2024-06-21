@@ -13,7 +13,7 @@ yarn
 ## The new era of CoNET
 
 ### New Link here:
-https://github.com/CoNET-project/CONET-Platform
+[https://bitbucket.org/matheus_moraes_pinheiro/conet](https://bitbucket.org/matheus_moraes_pinheiro/conet)
 
 ## Build
 
