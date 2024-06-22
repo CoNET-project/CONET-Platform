@@ -1,13 +1,3 @@
-# `CONET-Proxy` README
-
-The CONET Platform Application.
-
-## Install
-
-```bash
-yarn
-```
-
 ### This is the beginning of CoNET project
 ### now migrate to
 ## The new era of CoNET
@@ -18,6 +8,18 @@ yarn
 ## Homepage
 
 https://conet.network
+
+# `CONET-Proxy` README
+
+The CONET Platform Application.
+
+## Install
+
+```bash
+yarn
+```
+
+
 
 ## Build
 
